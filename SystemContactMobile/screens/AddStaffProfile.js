@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Image, StyleSheet, ScrollView } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
+import {postStaffToApi} from '../services/staffService'
 
 export default function AddStaffProfileScreen() {
+  const [id, setID]=useState('');
   const [fullName, setFullName] = useState('');
-  const [photo, setPhoto] = useState(''); 
+  const [imageUrl, setImageUrl] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [houseLot, setHouseLot] = useState('');
   const [street, setStreet] = useState('');
@@ -12,31 +13,25 @@ export default function AddStaffProfileScreen() {
   const [postcode, setPostcode] = useState('');
   const [state, setState] = useState('');
 
-  const selectImage = () => {
-    ImagePicker.showImagePicker({ title: 'Select Photo', maxWidth: 800, maxHeight: 600 }, (response) => {
-      if (!response.didCancel && !response.error) {
-        setPhoto(response.uri);
-      }
-    });
-  };
-
   const saveStaffProfile = () => {
-    console.log('Saving Staff Profile:', {
-      fullName,
-      photo,
-      phoneNumber,
-      address: {
-        houseLot,
-        street,
-        suburb,
-        postcode,
-        state,
-      },
-    });
+    postStaffToApi( id,fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode,state)
+    .then(()=>{
+
+    })
+    .catch((error)=>{
+      console.error(error)
+    })
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.label}>ID:</Text>
+      <TextInput
+        style={styles.input}
+        value={id}
+        onChangeText={(text) => setID(text)}
+      />
+      
       <Text style={styles.label}>Full Name:</Text>
       <TextInput
         style={styles.input}
@@ -44,12 +39,16 @@ export default function AddStaffProfileScreen() {
         onChangeText={(text) => setFullName(text)}
       />
 
+      <Text style={styles.label}>Image URL:</Text>
+      <TextInput
+        style={styles.input}
+        value={imageUrl}
+        onChangeText={(text) => setImageUrl(text)}
+      />
       <View style={styles.imageContainer}>
-        {photo ? (
-          <Image source={{ uri: photo }} style={styles.photo} />
-        ) : (
-          <Button title="Select Photo" onPress={selectImage} />
-        )}
+        {imageUrl ? (
+          <Image source={{ uri: imageUrl }} style={styles.photo} />
+        ) : null}
       </View>
 
       <Text style={styles.label}>Phone Number:</Text>
@@ -108,7 +107,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20,
   },
-  photo: {
+  imageUrl: {
     width: 200,
     height: 200,
     borderRadius: 100,
