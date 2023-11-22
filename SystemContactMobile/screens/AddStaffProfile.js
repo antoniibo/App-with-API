@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, Image, StyleSheet, ScrollView } from 're
 import {postStaffToApi} from '../services/staffService'
 
 export default function AddStaffProfileScreen() {
-  const [id, setID]=useState('');
+  
   const [fullName, setFullName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -14,9 +14,9 @@ export default function AddStaffProfileScreen() {
   const [state, setState] = useState('');
 
   const saveStaffProfile = () => {
-    postStaffToApi( id,fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode,state)
+    postStaffToApi(fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode,state)
     .then(()=>{
-
+      navigation.navigate('MainMenu');
     })
     .catch((error)=>{
       console.error(error)
@@ -25,13 +25,6 @@ export default function AddStaffProfileScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.label}>ID:</Text>
-      <TextInput
-        style={styles.input}
-        value={id}
-        onChangeText={(text) => setID(text)}
-      />
-      
       <Text style={styles.label}>Full Name:</Text>
       <TextInput
         style={styles.input}

@@ -1,32 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View,ScrollView, FlatList, Button, Image, Text, StyleSheet } from 'react-native';
-
-const staffData = [
-  {id: 1, name: 'John Doe', imageUrl: 'https://cdn.britannica.com/41/218341-050-51D8903F/American-actor-John-Krasinski-2020.jpg' },
-  {id: 2, name: 'Smith Smithson', imageUrl: 'https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/1650_v9_bb.jpg'},
-  {id: 3, name: 'Granny Apple', imageUrl:'https://static.wikia.nocookie.net/grannysmith/images/c/c7/Mrs._Smith.jpg/revision/latest?cb=20200118214621'},
-  {id: 4, name: 'Big Monkey', imageUrl:'https://bigthink.com/wp-content/uploads/2014/08/origin-214.jpg?w=640'},
-];
+import { getStaffFromApi } from '../services/staffService';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function StaffListScreen ({ navigation }) {
-  const renderItem = ({ item }) => (
+  const[staff, setStaff] = useState([])
+  const[isLoading, setIsLoading] = useState(true)
+
+  useFocusEffect(React.useCallback(()=>{
+    getStaffFromApi()
+      .then((data) =>{
+        console.log('Staff Data:', data);
+        setStaff(data)
+      })
+      .catch((error)=> {console.error(error)})
+      .finally(()=> setIsLoading(false))
+  }, []))
+  const renderItem = ({ item }) => {
+    const staff = item;
+
+    return (
     <View style={styles.staffItem}>
-      <Image source={{ uri: item.imageUrl }} style={styles.staffImage} />
+      <Image source={{ uri: staff.imageUrl }} style={styles.staffImage} />
       <Button
-        title={item.name}
-        onPress={() => navigation.navigate('StaffDetails', { staffId: item.id })}
+        title={staff.fullName}
+        onPress={() => navigation.navigate('StaffEdit')}
       />
     </View>
   );
+}
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View contentContainerStyle={styles.container}>
         <FlatList
-          data={staffData}
-          keyExtractor={(item) => item.id.toString()}
+          data={staff}
+          keyExtractor={(staff) => staff.id.toString()}
           renderItem={renderItem}
         />
-    </ScrollView>
+    </View>
   );
 };
 

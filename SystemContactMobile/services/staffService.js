@@ -1,7 +1,19 @@
 import { Platform } from 'react-native';
 
 const baseUrl = getServerAddress();
-export function postStaffToApi(id, fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode,state){
+
+export function getStaffFromApi(){
+    const relUrl = '/api/staff/all'
+    return fetch (new URL(relUrl,baseUrl))
+    .then((response)=>{
+        if(response.ok){
+            return response.json();
+        }
+        return Promise.reject('There was some error getting data from the service')
+    })
+}
+
+export function postStaffToApi(fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode,state){
     const relUrl ='/api/staff'
 
     return fetch(new URL(relUrl,baseUrl),
@@ -11,7 +23,6 @@ export function postStaffToApi(id, fullName, imageUrl, phoneNumber, houseLot, st
             'Content-Type':'application/json'
         },
         body: JSON.stringify({
-            id:id,
             fullName:fullName,
             imageUrl:imageUrl,
             phoneNumber:phoneNumber,
