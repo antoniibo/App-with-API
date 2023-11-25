@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, FlatList, Button, Image, Text, StyleSheet } from 'react-native';
+import { View, FlatList, Button, Image, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { getStaffFromApi } from '../services/staffService';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -32,11 +32,13 @@ export default function StaffListScreen ({ navigation }) {
 
   return (
     <View contentContainerStyle={styles.container}>
+         {isLoading ? <ActivityIndicator /> : (
         <FlatList
           data={staff}
           keyExtractor={(staff) => staff.id.toString()}
           renderItem={renderItem}
         />
+        )}
     </View>
   );
 };

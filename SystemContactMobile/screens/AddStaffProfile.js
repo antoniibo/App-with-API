@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Image, StyleSheet, ScrollView } from 'react-native';
-import {postStaffToApi} from '../services/staffService'
+import {postStaffToApi,getDepartmentsFromApi} from '../services/staffService';
+import { Picker } from '@react-native-picker/picker';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function AddStaffProfileScreen() {
   
   const [fullName, setFullName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [departmentId, setDepartmentId] = useState(0);
+  const [departments, setDepartments] = useState([]);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [houseLot, setHouseLot] = useState('');
   const [street, setStreet] = useState('');
@@ -13,8 +17,9 @@ export default function AddStaffProfileScreen() {
   const [postcode, setPostcode] = useState('');
   const [state, setState] = useState('');
 
+
   const saveStaffProfile = () => {
-    postStaffToApi(fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode,state)
+    postStaffToApi(fullName, imageUrl,departmentId, phoneNumber, houseLot, street, suburb, postcode,state)
     .then(()=>{
       navigation.navigate('MainMenu');
     })
@@ -22,6 +27,14 @@ export default function AddStaffProfileScreen() {
       console.error(error)
     })
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+        getDepartmentsFromApi()
+            .then((data => setDepartments(data)))
+            .catch((error) => console.error(error));
+    }, [])
+);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -43,6 +56,18 @@ export default function AddStaffProfileScreen() {
           <Image source={{ uri: imageUrl }} style={styles.photo} />
         ) : null}
       </View>
+      <Text style={styles.label}>Department:</Text>
+      <Picker
+        selectedValue={departmentId}
+        onValueChange={(itemValue, itemIndex) =>
+          setDepartmentId(parseInt(itemValue,10))
+        }
+      >
+        <Picker.Item label="Please select..." value="0" />
+        {departments.map((d) =>
+          <Picker.Item key={d.id} label={d.name} value={d.id} />
+        )}
+      </Picker>
 
       <Text style={styles.label}>Phone Number:</Text>
       <TextInput

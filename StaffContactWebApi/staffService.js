@@ -14,48 +14,21 @@ function getById(id) {
     return null;
 }
 
-function addStaff(fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode,state) {
-    const staff = {
-        id: getNextId(),
-        fullName:fullName, 
-        imageUrl:imageUrl, 
-        phoneNumber:phoneNumber, 
-        houseLot:houseLot, 
-        street:street, 
-        suburb:suburb, 
-        postcode:postcode, 
-        state:state
-    };
-
+function addStaff(staff) {
+    staff.id = getNextId()
+    
     staffData.push(staff);
-
-    return staff;
 }
-function updateStaff(staffToUpdate) {
-    const { id, fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode, state } = staffToUpdate;
-
+function updateStaff(staff) {
+    const { id, fullName, imageUrl, departmentId, phoneNumber, houseLot, street, suburb, postcode, state } = staff;
     const staffIndex = staffData.findIndex((s) => s.id === id);
     if (staffIndex !== -1) {
-        staffData[staffIndex] = {
-            id,
-            fullName,
-            imageUrl,
-            phoneNumber,
-            houseLot,
-            street,
-            suburb,
-            postcode,
-            state
-        };
+        staffData[staffIndex] = staff;
+    
     } else {
         throw new Error('Staff member not found.');
     }
-
-    return staffData[staffIndex];
 }
-
-
-let lastId = 2;
 
 function getNextId() {
     const nextId = staffData.length > 0 ? Math.max(...staffData.map((staff) => staff.id)) + 1 : 1;

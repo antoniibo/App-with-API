@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Image, StyleSheet, ScrollView } from 'react-native';
-import { getStaffById, updateStaffToApi } from '../services/staffService';
+import { getStaffById, updateStaffToApi,getDepartmentsFromApi } from '../services/staffService';
 import { useFocusEffect } from '@react-navigation/native';
+import { Picker } from '@react-native-picker/picker';
 
 
 export default function StaffEditScreen({ route, navigation }) {
@@ -9,6 +10,8 @@ export default function StaffEditScreen({ route, navigation }) {
   
   const [fullName, setFullName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [departmentId, setDepartmentId] = useState(0);
+  const [departments, setDepartments] = useState([]);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [houseLot, setHouseLot] = useState('');
   const [street, setStreet] = useState('');
@@ -19,6 +22,7 @@ export default function StaffEditScreen({ route, navigation }) {
   function setStaff(staff){
     setFullName(staff.fullName);
     setImageUrl(staff.imageUrl);
+    setDepartmentId(staff.department.id);
     setPhoneNumber(staff.phoneNumber);
     setHouseLot(staff.houseLot);
     setStreet(staff.street)
@@ -47,16 +51,14 @@ export default function StaffEditScreen({ route, navigation }) {
         return () => {
             isActive = false;
         };
-
-        // Old version using promises
-        // getMusicByIdFromApi(musicId)
-        //     .then((data) => {
-        //         setMusic(data);
-        //     })
-        //     .catch((error) => {
-        //         console.error(error);
-        //     });
     }, [staffId])
+);
+useFocusEffect(
+  React.useCallback(() => {
+      getDepartmentsFromApi()
+          .then((data => setDepartments(data)))
+          .catch((error) => console.error(error));
+  }, [])
 );
 
   const saveStaffProfile = () => {
@@ -65,6 +67,7 @@ export default function StaffEditScreen({ route, navigation }) {
         id: staffId,
         fullName,
         imageUrl,
+        departmentId,
         phoneNumber,
         houseLot,
         street,
@@ -102,7 +105,18 @@ export default function StaffEditScreen({ route, navigation }) {
           <Image source={{ uri: imageUrl }} style={styles.photo} />
         ) : null}
       </View>
-
+      <Text>Department:</Text>
+            <Picker
+                selectedValue={departmentId}
+                onValueChange={(itemValue, itemIndex) =>
+                    setDepartmentId(parseInt(itemValue,10))
+                }
+            >
+      <Picker.Item label="Please select..." value="0" />
+        {departments.map((d) =>
+          <Picker.Item key={d.id} label={d.name} value={d.id} />
+        )}
+      </Picker>
       <Text style={styles.label}>Phone Number:</Text>
       <TextInput
         style={styles.input}

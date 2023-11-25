@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const staffService = require('./staffService.js');
+const departmentService = require('./departmentService.js')
 const app = express();
 const port = 3000;
 
@@ -14,7 +15,23 @@ app.get('/', (req, res) => {
 
 app.get('/api/staff/all', (req, res) => {
     const data = staffService.getAll();
-    res.json(data);
+    const result = data.map((staff) => {
+        const department = departmentService.getById(staff.departmentId);
+
+        return {
+            id: staff.id,
+            fullName: staff.fullName,
+            imageUrl: staff.imageUrl,
+            department: department ? { id: department.id, name: department.name } : null,
+            phoneNumber: staff.phoneNumber,
+            houseLot:staff.houseLot,
+            street: staff.street,
+            suburb: staff.suburb,
+            postcode: staff.postcode,
+            state: staff.state,
+        };
+    });
+    res.json(result);
 });
 
 app.get('/api/staff', (req, res) => {
@@ -32,16 +49,40 @@ app.get('/api/staff', (req, res) => {
     const staff = staffService.getById(id);
 
     if (staff !== null) {
-        res.json(staff);
+        const department = departmentService.getById(staff.departmentId);
+        res.json({
+            id: staff.id,
+            fullName: staff.fullName,
+            imageUrl: staff.imageUrl,
+            department: department ? { id: department.id, name: department.name } : null,
+            phoneNumber: staff.phoneNumber,
+            houseLot:staff.houseLot,
+            street: staff.street,
+            suburb: staff.suburb,
+            postcode: staff.postcode,
+            state: staff.state,
+        });
     } else {
         res.status(404).send(`The staff with an id of ${id} could not be found!`);
     }
 });
 
 app.post('/api/staff', (req, res) => {
-    const { fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode, state} = req.body;
+    const { fullName, imageUrl, departmentId, phoneNumber, houseLot, street, suburb, postcode, state} = req.body;
 
-    const staff = staffService.addStaff(fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode, state);
+    const staff = {
+        id: 0,
+        fullName: fullName,
+        imageUrl:imageUrl,
+        departmentId: departmentId,
+        phoneNumber: phoneNumber,
+        houseLot:houseLot,
+        street: street,
+        suburb: suburb,
+        postcode: postcode,
+        state: state,
+    }
+    staffService.addStaff(staff)
 
     res.status(201);
     res.location(`/api/staff?id=${staff.id}`);
@@ -49,7 +90,7 @@ app.post('/api/staff', (req, res) => {
 });
 
 app.put('/api/staff', (req, res) => {
-    const { id, fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode, state } = req.body;
+    const { id, fullName, imageUrl,departmentId, phoneNumber, houseLot, street, suburb, postcode, state } = req.body;
 
     const staff = staffService.getById(id);
 
@@ -58,6 +99,7 @@ app.put('/api/staff', (req, res) => {
     } else {
         staff.fullName = fullName,
         staff.imageUrl = imageUrl,
+        staff.departmentId=departmentId,
         staff.phoneNumber = phoneNumber,
         staff.houseLot = houseLot,
         staff.street = street,
@@ -68,6 +110,12 @@ app.put('/api/staff', (req, res) => {
         staffService.updateStaff(staff);
         res.send();
     }
+});
+
+app.get('/api/departments', (req, res) => {
+    const departments = departmentService.getAll();
+
+    res.json(departments);
 });
 
 app.listen(port, () => {

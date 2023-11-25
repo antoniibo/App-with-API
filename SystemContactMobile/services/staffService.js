@@ -2,9 +2,6 @@ import { Platform } from 'react-native';
 
 const baseUrl = getServerAddress();
 
-
-
-
 export function getStaffFromApi(){
     const relUrl = '/api/staff/all'
     return fetch (new URL(relUrl,baseUrl))
@@ -12,7 +9,8 @@ export function getStaffFromApi(){
         if(response.ok){
             return response.json();
         }
-        return Promise.reject('There was some error getting data from the service')
+        console.error('Error fetching staff data:', error);
+        throw error;
     })
 }
 
@@ -23,7 +21,7 @@ export function getStaffById(staffId){
     return fetch(fullUrl).then((response) => response.json());
 }
 
-export function postStaffToApi(fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode,state){
+export function postStaffToApi(fullName, imageUrl,departmentId, phoneNumber, houseLot, street, suburb, postcode,state){
     const relUrl ='/api/staff'
 
     return fetch(new URL(relUrl,baseUrl),
@@ -35,6 +33,7 @@ export function postStaffToApi(fullName, imageUrl, phoneNumber, houseLot, street
         body: JSON.stringify({
             fullName:fullName,
             imageUrl:imageUrl,
+            departmentId: departmentId,
             phoneNumber:phoneNumber,
             houseLot:houseLot,
             street:street,
@@ -51,7 +50,7 @@ export function postStaffToApi(fullName, imageUrl, phoneNumber, houseLot, street
     })
 }   
 export function updateStaffToApi(staffToUpdate){
-    const {id, fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode, state} = staffToUpdate;
+    const {id, fullName, imageUrl,departmentId, phoneNumber, houseLot, street, suburb, postcode, state} = staffToUpdate;
     const fullUrl = new URL('/api/staff', baseUrl);
     return fetch(fullUrl, {
         method: 'PUT',
@@ -63,6 +62,7 @@ export function updateStaffToApi(staffToUpdate){
             id: id,
             fullName:fullName,
             imageUrl:imageUrl,
+            departmentId:departmentId,
             phoneNumber:phoneNumber,
             houseLot:houseLot,
             street:street,
@@ -77,6 +77,13 @@ export function updateStaffToApi(staffToUpdate){
             return Promise.reject(new Error('Did not save staff correctly!'));
         }
     });
+}
+export async function getDepartmentsFromApi() {
+    const fullUrl = new URL('/api/departments', baseUrl);
+
+    const response = await fetch(fullUrl);
+
+    return response.json();
 }
 function getServerAddress() {
     if (Platform.OS === "web") {
