@@ -39,14 +39,35 @@ app.get('/api/staff', (req, res) => {
 });
 
 app.post('/api/staff', (req, res) => {
-    // Code is optimistic and assumes the body will have all the necessary data
-    const { id, fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode, state} = req.body;
+    const { fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode, state} = req.body;
 
-    const staff = staffService.addStaff(id, fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode, state);
+    const staff = staffService.addStaff(fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode, state);
 
     res.status(201);
     res.location(`/api/staff?id=${staff.id}`);
     res.send();
+});
+
+app.put('/api/staff', (req, res) => {
+    const { id, fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode, state } = req.body;
+
+    const staff = staffService.getById(id);
+
+    if (staff === null) {
+        res.status(404).send(`The staff with an id of ${id} could not be found!`);
+    } else {
+        staff.fullName = fullName,
+        staff.imageUrl = imageUrl,
+        staff.phoneNumber = phoneNumber,
+        staff.houseLot = houseLot,
+        staff.street = street,
+        staff.suburb = suburb,
+        staff.postcode = postcode,
+        staff.state = state
+
+        staffService.updateStaff(staff);
+        res.send();
+    }
 });
 
 app.listen(port, () => {

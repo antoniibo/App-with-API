@@ -2,6 +2,9 @@ import { Platform } from 'react-native';
 
 const baseUrl = getServerAddress();
 
+
+
+
 export function getStaffFromApi(){
     const relUrl = '/api/staff/all'
     return fetch (new URL(relUrl,baseUrl))
@@ -11,6 +14,13 @@ export function getStaffFromApi(){
         }
         return Promise.reject('There was some error getting data from the service')
     })
+}
+
+export function getStaffById(staffId){
+    const fullUrl = new URL('/api/staff', baseUrl);
+    fullUrl.searchParams.append('id', staffId);
+
+    return fetch(fullUrl).then((response) => response.json());
 }
 
 export function postStaffToApi(fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode,state){
@@ -40,6 +50,34 @@ export function postStaffToApi(fullName, imageUrl, phoneNumber, houseLot, street
         } 
     })
 }   
+export function updateStaffToApi(staffToUpdate){
+    const {id, fullName, imageUrl, phoneNumber, houseLot, street, suburb, postcode, state} = staffToUpdate;
+    const fullUrl = new URL('/api/staff', baseUrl);
+    return fetch(fullUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: id,
+            fullName:fullName,
+            imageUrl:imageUrl,
+            phoneNumber:phoneNumber,
+            houseLot:houseLot,
+            street:street,
+            suburb:suburb,
+            postcode:postcode,
+            state:state 
+        })
+    }).then(response => {
+        if (response.ok) {
+            console.log('Saved')
+        } else {
+            return Promise.reject(new Error('Did not save staff correctly!'));
+        }
+    });
+}
 function getServerAddress() {
     if (Platform.OS === "web") {
         return 'http://localhost:3000'

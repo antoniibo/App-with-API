@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View,ScrollView, FlatList, Button, Image, Text, StyleSheet } from 'react-native';
+import { View, FlatList, Button, Image, Text, StyleSheet } from 'react-native';
 import { getStaffFromApi } from '../services/staffService';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -16,16 +16,16 @@ export default function StaffListScreen ({ navigation }) {
       .catch((error)=> {console.error(error)})
       .finally(()=> setIsLoading(false))
   }, []))
+  const navigateToStaffEdit = (staffId) => {
+    navigation.navigate('StaffEdit', { id: staffId });
+  };
   const renderItem = ({ item }) => {
     const staff = item;
 
     return (
-    <View style={styles.staffItem}>
+    <View key={`staffItem_${staff.id}`} style={styles.staffItem}>
       <Image source={{ uri: staff.imageUrl }} style={styles.staffImage} />
-      <Button
-        title={staff.fullName}
-        onPress={() => navigation.navigate('StaffEdit')}
-      />
+      <Button title={item.fullName} onPress={() => navigateToStaffEdit(item.id)} />
     </View>
   );
 }
@@ -41,6 +41,7 @@ export default function StaffListScreen ({ navigation }) {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -52,6 +53,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 30,
+    border: '1px solid #ddd', 
+    padding: 10,
+    borderRadius: 8,
+    boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)', 
   },
   staffImage: {
     width: 80,
@@ -60,4 +65,24 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 });
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     padding: 16,
+//   },
+//   staffItem: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     marginBottom: 30,
+//   },
+//   staffImage: {
+//     width: 80,
+//     height: 80,
+//     borderRadius: 25,
+//     marginRight: 10,
+//   },
+// });
 
