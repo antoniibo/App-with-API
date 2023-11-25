@@ -23,8 +23,8 @@ const staff =[
     },
     {
         id: 3, 
-        fullName: 'Granny Apple', 
-        imageUrl:'https://static.wikia.nocookie.net/grannysmith/images/c/c7/Mrs._Smith.jpg/revision/latest?cb=20200118214621',
+        fullName: 'Dog Patron', 
+        imageUrl:'https://creativeplay.com.ua/img/products/original/PBcjYs51mCRz4FrxtgNvfKeD7WMVZkq9.webp',
         phoneNumber: '000000000',
         houseLot:'2/27',
         street:'Cool st',

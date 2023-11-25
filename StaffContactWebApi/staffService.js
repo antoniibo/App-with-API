@@ -58,8 +58,7 @@ function updateStaff(staffToUpdate) {
 let lastId = 2;
 
 function getNextId() {
-    const nextId = lastId + 1;
-    lastId = nextId;
+    const nextId = staffData.length > 0 ? Math.max(...staffData.map((staff) => staff.id)) + 1 : 1;
     return nextId;
 }
 
