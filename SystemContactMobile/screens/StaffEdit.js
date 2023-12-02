@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Image, StyleSheet, ScrollView } from 'react-native';
-import {postStaffToApi,getDepartmentsFromApi} from '../services/staffService';
-import { Picker } from '@react-native-picker/picker';
+import { getStaffById, updateStaffToApi,getDepartmentsFromApi } from '../services/staffService';
 import { useFocusEffect } from '@react-navigation/native';
+import { Picker } from '@react-native-picker/picker';
 
-export default function AddStaffProfileScreen({navigation}) {
+
+export default function StaffEditScreen({ route, navigation }) {
+  const staffId = route.params.id;
   
   const [fullName, setFullName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -17,24 +19,71 @@ export default function AddStaffProfileScreen({navigation}) {
   const [postcode, setPostcode] = useState('');
   const [state, setState] = useState('');
 
-
-  const saveStaffProfile = () => {
-    postStaffToApi(fullName, imageUrl,departmentId, phoneNumber, houseLot, street, suburb, postcode,state)
-    .then(()=>{
-      navigation.navigate('MainMenu');
-    })
-    .catch((error)=>{
-      console.error(error)
-    })
-  };
-
+  function setStaff(staff){
+    setFullName(staff.fullName);
+    setImageUrl(staff.imageUrl);
+    setDepartmentId(staff.department.id);
+    setPhoneNumber(staff.phoneNumber);
+    setHouseLot(staff.houseLot);
+    setStreet(staff.street)
+    setSuburb(staff.suburb)
+    setPostcode(staff.postcode)
+    setState(staff.state)
+  }
   useFocusEffect(
     React.useCallback(() => {
-        getDepartmentsFromApi()
-            .then((data => setDepartments(data)))
-            .catch((error) => console.error(error));
-    }, [])
+        let isActive = true;
+
+        async function fetchStaff() {
+            try {
+                const staff = await getStaffById(staffId);
+
+                if (isActive) {
+                    setStaff(staff);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        fetchStaff();
+
+        return () => {
+            isActive = false;
+        };
+    }, [staffId])
 );
+useFocusEffect(
+  React.useCallback(() => {
+      getDepartmentsFromApi()
+          .then((data => setDepartments(data)))
+          .catch((error) => console.error(error));
+  }, [])
+);
+
+  const saveStaffProfile = () => {
+
+    const  staff = {
+        id: staffId,
+        fullName,
+        imageUrl,
+        departmentId,
+        phoneNumber,
+        houseLot,
+        street,
+        suburb,
+        postcode,
+        state
+    }
+
+    updateStaffToApi(staff)
+      .then(() => {
+        navigation.navigate('StaffListing');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -56,19 +105,18 @@ export default function AddStaffProfileScreen({navigation}) {
           <Image source={{ uri: imageUrl }} style={styles.photo} />
         ) : null}
       </View>
-      <Text style={styles.label}>Department:</Text>
-      <Picker
-        selectedValue={departmentId}
-        onValueChange={(itemValue, itemIndex) =>
-          setDepartmentId(parseInt(itemValue,10))
-        }
-      >
-        <Picker.Item label="Please select..." value="0" />
+      <Text>Department:</Text>
+            <Picker
+                selectedValue={departmentId}
+                onValueChange={(itemValue, itemIndex) =>
+                    setDepartmentId(parseInt(itemValue,10))
+                }
+            >
+      <Picker.Item label="Please select..." value="0" />
         {departments.map((d) =>
           <Picker.Item key={d.id} label={d.name} value={d.id} />
         )}
       </Picker>
-
       <Text style={styles.label}>Phone Number:</Text>
       <TextInput
         style={styles.input}
@@ -88,33 +136,19 @@ export default function AddStaffProfileScreen({navigation}) {
         placeholder="Postcode"
         keyboardType="numeric"
       />
-      {/* <TextInput
+      <TextInput
         style={styles.input}
         value={state}
         onChangeText={(text) => setState(text)}
         placeholder="State"
-      /> */}
-      <Picker
-        selectedValue={state}
-        onValueChange={(itemValue, itemIndex) => setState(itemValue)}
-      >
-        <Picker.Item label="Please select..." value="" />
-        <Picker.Item label="NSW" value="NSW" />
-        <Picker.Item label="VIC" value="VIC" />
-        <Picker.Item label="QLD" value="QLD" />
-        <Picker.Item label="SA" value="SA" />
-        <Picker.Item label="WA" value="WA" />
-        <Picker.Item label="TAS" value="TAS" />
-        <Picker.Item label="ACT" value="ACT" />
-        <Picker.Item label="NT" value="NT" />
-      </Picker>
+      />
 
       <View style={styles.buttonContainer}>
-        <Button title="Save" onPress={saveStaffProfile} />
+        <Button title="Update Info" onPress={saveStaffProfile} />
       </View>
     </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -148,4 +182,3 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-
