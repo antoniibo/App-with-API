@@ -4,7 +4,7 @@ import {postStaffToApi,getDepartmentsFromApi} from '../services/staffService';
 import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
 
-export default function AddStaffProfileScreen() {
+export default function AddStaffProfileScreen({navigation}) {
   
   const [fullName, setFullName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -88,12 +88,26 @@ export default function AddStaffProfileScreen() {
         placeholder="Postcode"
         keyboardType="numeric"
       />
-      <TextInput
+      {/* <TextInput
         style={styles.input}
         value={state}
         onChangeText={(text) => setState(text)}
         placeholder="State"
-      />
+      /> */}
+      <Picker
+        selectedValue={state}
+        onValueChange={(itemValue, itemIndex) => setState(itemValue)}
+      >
+        <Picker.Item label="Please select..." value="" />
+        <Picker.Item label="NSW" value="NSW" />
+        <Picker.Item label="VIC" value="VIC" />
+        <Picker.Item label="QLD" value="QLD" />
+        <Picker.Item label="SA" value="SA" />
+        <Picker.Item label="WA" value="WA" />
+        <Picker.Item label="TAS" value="TAS" />
+        <Picker.Item label="ACT" value="ACT" />
+        <Picker.Item label="NT" value="NT" />
+      </Picker>
 
       <View style={styles.buttonContainer}>
         <Button title="Save" onPress={saveStaffProfile} />

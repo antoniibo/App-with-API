@@ -2,11 +2,11 @@ import { Platform } from 'react-native';
 
 const baseUrl = getServerAddress();
 
-export function getStaffFromApi(){
+export function getStaffFromApi() {
     const relUrl = '/api/staff/all'
-    return fetch (new URL(relUrl,baseUrl))
-    .then((response)=>{
-        if(response.ok){
+    return fetch (new URL(relUrl, baseUrl))
+    .then((response) => {
+        if(response.ok) {
             return response.json();
         }
         console.error('Error fetching staff data:', error);
@@ -21,25 +21,25 @@ export function getStaffById(staffId){
     return fetch(fullUrl).then((response) => response.json());
 }
 
-export function postStaffToApi(fullName, imageUrl,departmentId, phoneNumber, houseLot, street, suburb, postcode,state){
-    const relUrl ='/api/staff'
+export function postStaffToApi(fullName, imageUrl, departmentId, phoneNumber, houseLot, street, suburb, postcode,state){
+    const relUrl = '/api/staff'
 
-    return fetch(new URL(relUrl,baseUrl),
+    return fetch(new URL(relUrl, baseUrl),
     {
-        method:'POST',
+        method: 'POST',
         headers:{
-            'Content-Type':'application/json'
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            fullName:fullName,
-            imageUrl:imageUrl,
+            fullName: fullName,
+            imageUrl: imageUrl,
             departmentId: departmentId,
-            phoneNumber:phoneNumber,
-            houseLot:houseLot,
-            street:street,
-            suburb:suburb,
-            postcode:postcode,
-            state:state 
+            phoneNumber: phoneNumber,
+            houseLot: houseLot,
+            street: street,
+            suburb: suburb,
+            postcode: postcode,
+            state: state 
         })
     }).then(response =>{
         if (response.ok) {
@@ -60,15 +60,15 @@ export function updateStaffToApi(staffToUpdate){
         },
         body: JSON.stringify({
             id: id,
-            fullName:fullName,
-            imageUrl:imageUrl,
-            departmentId:departmentId,
-            phoneNumber:phoneNumber,
-            houseLot:houseLot,
-            street:street,
-            suburb:suburb,
-            postcode:postcode,
-            state:state 
+            fullName: fullName,
+            imageUrl: imageUrl,
+            departmentId: departmentId,
+            phoneNumber: phoneNumber,
+            houseLot: houseLot,
+            street: street,
+            suburb: suburb,
+            postcode: postcode,
+            state: state 
         })
     }).then(response => {
         if (response.ok) {

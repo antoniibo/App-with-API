@@ -11,10 +11,14 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="MainMenu">
-        <Stack.Screen name="MainMenu" component={MainMenu} />
-        <Stack.Screen name="StaffListing" component={StaffListScreen} />
-        <Stack.Screen name="AddStaffProfile" component={AddStaffProfile} />
-        <Stack.Screen name="StaffEdit" component={StaffEdit} />
+      <Stack.Screen name="MainMenu" component={MainMenu}
+          options={{ title: "Main Menu" }} />
+        <Stack.Screen name="StaffListing" component={StaffListScreen}
+          options={{ title: "Staff Listing" }} />
+        <Stack.Screen name="AddStaffProfile" component={AddStaffProfile}
+          options={{ title: "Add Staff Profile" }} />
+        <Stack.Screen name="StaffEdit" component={StaffEdit}
+          options={{ title: "Edit Staff Profile" }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
